@@ -1,6 +1,7 @@
 package com.example.sparta_ticketing.domain.show.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -8,8 +9,10 @@ import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.response.PagingShowResponse;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
@@ -55,10 +58,20 @@ public class ShowService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ShowResponseDto> getShowList(int page, int size) {
+    public PagingShowResponse getShowList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Show> showPage = showRepository.findAll(pageable);
-        return showPage.map(ShowResponseDto::toDto);
+        Page<Show> showPage = showRepository.findByStatus(ShowStatus.NOT_DELETED, pageable);
+        List<ShowResponseDto> shows = showPage.getContent()
+                .stream()
+                .map(ShowResponseDto::toDto)
+                .toList();
+        return new PagingShowResponse(
+                shows,
+                showPage.getNumber(),
+                showPage.getSize(),
+                showPage.getTotalPages(),
+                showPage.getTotalElements()
+        );
     }
 
     /**
@@ -98,6 +111,6 @@ public class ShowService {
     }
 
     private Show findShow(Long showId) {
-        return showRepository.findById(showId).orElseThrow(() -> new IllegalArgumentException("해당 공연을 찾을 수 없습니다."));
+        return showRepository.findShowById(showId).orElseThrow(() -> new ShowNotFoundException("해당 공연을 찾을 수 없습니다."));
     }
 }

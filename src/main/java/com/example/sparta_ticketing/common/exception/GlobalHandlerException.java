@@ -26,6 +26,12 @@ public class GlobalHandlerException {
         return getErrorResponse(status, ex.getMessage());
     }
 
+    @ExceptionHandler(ShowNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> showNotFoundException(ShowNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return getErrorResponse(status, ex.getMessage());
+    }
+
     @ExceptionHandler(AuthException.class)
     public ResponseEntity<Map<String, Object>> authException(AuthException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;

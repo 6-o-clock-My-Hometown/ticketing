@@ -8,6 +8,7 @@ import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.response.PagingShowResponse;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
@@ -55,10 +56,20 @@ public class ShowService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ShowResponseDto> getShowList(int page, int size) {
+    public PagingShowResponse getShowList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Show> showPage = showRepository.findAll(pageable);
-        return showPage.map(ShowResponseDto::toDto);
+        List<ShowResponseDto> shows = showPage.getContent()
+                .stream()
+                .map(ShowResponseDto::toDto)
+                .toList();
+        return new PagingShowResponse(
+                shows,
+                showPage.getNumber(),
+                showPage.getSize(),
+                showPage.getTotalPages(),
+                showPage.getTotalElements()
+        );
     }
 
     /**

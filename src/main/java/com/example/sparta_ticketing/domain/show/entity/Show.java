@@ -3,10 +3,8 @@ package com.example.sparta_ticketing.domain.show.entity;
 import com.example.sparta_ticketing.common.entity.BaseEntity;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
-import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
-import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -15,9 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
-
-import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
+import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.*;
 
 @Getter
 @Entity
@@ -50,7 +46,8 @@ public class Show extends BaseEntity {
         this.totalSeats = totalSeats;
     }
 
-    private ShowStatus isDeleted;
+    @Enumerated(EnumType.STRING)
+    private ShowStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Directer_Id", nullable = false)
@@ -68,7 +65,7 @@ public class Show extends BaseEntity {
     }
 
     public void deleteShow() {
-        this.isDeleted = DELETED;
+        this.status = DELETED;
     }
 
 

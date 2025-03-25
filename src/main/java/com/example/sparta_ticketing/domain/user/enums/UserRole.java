@@ -1,6 +1,6 @@
 package com.example.sparta_ticketing.domain.user.enums;
 
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import lombok.Getter;
 
 import java.util.Arrays;

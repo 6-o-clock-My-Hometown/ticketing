@@ -1,11 +1,14 @@
 package com.example.sparta_ticketing.domain.show.dto.request;
 
 import com.example.sparta_ticketing.domain.show.enums.Category;
+import com.example.sparta_ticketing.domain.show.enums.Region;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -18,17 +21,17 @@ public class UpdateShowRequestDto {
 
     private String content;
 
-    private String region;
+    private Region region;
 
-    private LocalDate startDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime startDate;
 
-    private LocalDate endDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime endDate;
 
-    private LocalDate reservationStartDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime reservationStartDate;
 
-    private LocalDate reservationEndDate;
-
-    private int totalSeat;
-
-    private String imageUrl;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime reservationEndDate;
 }

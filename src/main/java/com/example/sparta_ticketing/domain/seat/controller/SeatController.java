@@ -7,6 +7,7 @@ import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,9 @@ public class SeatController {
 
     private final SeatService seatService;
 
-    @GetMapping("/{showId}/seats/")
-    public ResponseEntity<List<SeatResponse>> getSeat(@PathVariable Long showId, Pageable pageable) {
+    @GetMapping("/{showId}/seats")
+    public ResponseEntity<List<SeatResponse>> getSeat(@PathVariable Long showId,
+                                                      @PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(seatService.findAllByShowId(showId, pageable));
     }
 

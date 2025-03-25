@@ -1,6 +1,8 @@
 package com.example.sparta_ticketing.domain.user.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserUpdateRequest {
 
-    @NotBlank
     private String nickname;
-    @NotBlank
+
+    @Size(min = 8)
     private String password;
-    @NotBlank
-    private String phone;
+
+    private String phoneNumber;
 }

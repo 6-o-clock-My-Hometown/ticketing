@@ -11,6 +11,7 @@ import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto
 import com.example.sparta_ticketing.domain.show.dto.response.PagingShowResponse;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
@@ -58,7 +59,7 @@ public class ShowService {
     @Transactional(readOnly = true)
     public PagingShowResponse getShowList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Show> showPage = showRepository.findAll(pageable);
+        Page<Show> showPage = showRepository.findByStatus(ShowStatus.NOT_DELETED, pageable);
         List<ShowResponseDto> shows = showPage.getContent()
                 .stream()
                 .map(ShowResponseDto::toDto)

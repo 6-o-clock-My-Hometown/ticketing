@@ -45,4 +45,5 @@ public class ShowResponseDto {
                 .totalSeats(show.getTotalSeats())
                 .build();
     }
+
 }

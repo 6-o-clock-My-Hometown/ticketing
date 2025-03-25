@@ -1,12 +1,13 @@
 package com.example.sparta_ticketing.domain.show.controller;
 
-import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.service.ShowService;
+import com.example.sparta_ticketing.domain.user.enums.UserRole;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,34 +19,33 @@ public class ShowController {
     /**
      * 특정 공연 조회 API
      */
-    @GetMapping("shows/{showId}")
+    @GetMapping("/shows/{showId}")
     public ResponseEntity<ShowResponseDto> getShow (
-            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        return ResponseEntity.ok(showService.getShow(authUser, showId));
+        return ResponseEntity.ok(ShowResponseDto.toDto(showService.getShow(showId)));
     }
 
     /**
      * 공연 수정 API
      */
+    @Secured(UserRole.Authority.DIRECTOR)
     @PatchMapping("/shows/{showId}")
     public void updateShow(
-            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId,
-            @RequestBody UpdateShowRequestDto updateShowRequestDto
+            @Valid @RequestBody UpdateShowRequestDto updateShowRequestDto
     ) {
-        showService.updateShow(authUser, showId, updateShowRequestDto);
+        showService.updateShow(showId, updateShowRequestDto);
     }
 
     /**
      * 공연 삭제 API
      */
-    @DeleteMapping("/show/{showId}")
+    @Secured(UserRole.Authority.DIRECTOR)
+    @DeleteMapping("/shows/{showId}")
     public void deleteShow(
-            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        showService.deleteShow(authUser, showId);
+        showService.deleteShow(showId);
     }
 }

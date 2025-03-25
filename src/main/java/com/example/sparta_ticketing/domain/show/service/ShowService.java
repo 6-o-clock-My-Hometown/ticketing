@@ -1,11 +1,11 @@
 package com.example.sparta_ticketing.domain.show.service;
 
-import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
-import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
+import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,32 +16,40 @@ public class ShowService {
     /**
      * 특정 공연 조회
      *
-     * @param authUser (인증된 유저 정보)
      * @param showId (조회할 공연 Id)
-     * @return ShowResponseDto
+     * @return Show
      */
-    public ShowResponseDto getShow(AuthUser authUser, Long showId) {
-        return null;
+    @Transactional(readOnly = true)
+    public Show getShow(Long showId) {
+        return findShow(showId);
     }
 
     /**
      * 특정 공연 정보 수정
      *
-     * @param authUser (인증된 유저 정보)
      * @param showId (수정할 공연 Id)
-     * @param requestDto (공연명, 공연 분류, 공연 상세 정보, 지역, 시작 날짜, 종료 날짜, 예약 시작 날짜, 예약 종료 날짜, 총 좌석, 이미지 )
+     * @param requestDto (공연명, 공연 분류, 공연 상세 정보, 지역, 시작 날짜, 종료 날짜, 예약 시작 날짜, 예약 종료 날짜)
      */
-    public void updateShow(AuthUser authUser, Long showId, UpdateShowRequestDto requestDto) {
+    @Transactional
+    public void updateShow(Long showId, UpdateShowRequestDto requestDto) {
+        Show findShow = findShow(showId);
 
+        findShow.updateShow(requestDto);
     }
 
     /**
      * 특정 공연 삭제
      *
-     * @param authUser (인증된 유저 정보)
      * @param showId (삭제할 공연 Id)
      */
-    public void deleteShow(AuthUser authUser, Long showId) {
+    @Transactional
+    public void deleteShow(Long showId) {
+        Show findShow = findShow(showId);
 
+        findShow.deleteShow();
+    }
+
+    private Show findShow(Long showId) {
+        return showRepository.findById(showId).orElseThrow(() -> new IllegalArgumentException("해당 공연을 찾을 수 없습니다."));
     }
 }

@@ -50,7 +50,7 @@ public class Show extends BaseEntity {
     private ShowStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Directer_Id", nullable = false)
+    @JoinColumn(name = "directer_id", nullable = false)
     private User user;
 
     public void updateShow(UpdateShowRequestDto requestDto) {

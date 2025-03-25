@@ -24,6 +24,7 @@ public class JwtUtil {
     @Value("${JWT.SECRET.KEY}")
     private String secretKey;
     private Key key;
+    //private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {

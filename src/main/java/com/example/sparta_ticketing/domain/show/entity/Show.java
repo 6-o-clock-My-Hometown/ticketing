@@ -15,9 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
-
-import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
+import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.*;
 
 @Getter
 @Entity
@@ -83,5 +81,6 @@ public class Show extends BaseEntity {
         this.reservationEndDate = createShowRequestDto.getReservationEndDate();
         this.totalSeats = totalSeats;
         this.user = user;
+        this.isDeleted = ACTIVE;
     }
 }

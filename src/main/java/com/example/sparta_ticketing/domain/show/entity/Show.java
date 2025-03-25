@@ -32,4 +32,7 @@ public class Show extends BaseEntity {
 
     private int totalSeats;
 
+    public void sumSeat(int totalSeats) {
+        this.totalSeats = totalSeats;
+    }
 }

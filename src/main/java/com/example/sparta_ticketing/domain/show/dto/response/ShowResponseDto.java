@@ -1,7 +1,10 @@
 package com.example.sparta_ticketing.domain.show.dto.response;
 
+import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.show.enums.Category;
+import com.example.sparta_ticketing.domain.show.enums.Region;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ShowResponseDto {
     private String title;
 
@@ -17,7 +21,7 @@ public class ShowResponseDto {
 
     private String content;
 
-    private String region;
+    private Region region;
 
     private LocalDateTime startDate;
 
@@ -27,9 +31,19 @@ public class ShowResponseDto {
 
     private LocalDateTime reservationEndDate;
 
-    private int totalSeat;
+    private int totalSeats;
 
-    private String imageUrl;
-
+    public static ShowResponseDto toDto(Show show) {
+        return ShowResponseDto.builder()
+                .title(show.getTitle())
+                .category(show.getCategory())
+                .region(show.getRegion())
+                .startDate(show.getStartDate())
+                .endDate(show.getEndDate())
+                .reservationStartDate(show.getReservationStartDate())
+                .reservationEndDate(show.getReservationEndDate())
+                .totalSeats(show.getTotalSeats())
+                .build();
+    }
 
 }

@@ -1,13 +1,25 @@
 package com.example.sparta_ticketing.domain.show.entity;
 
 import com.example.sparta_ticketing.common.entity.BaseEntity;
+import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
+import com.example.sparta_ticketing.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
+
+import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
+
+@Getter
 @Entity
 @Table(name = "shows")
 @NoArgsConstructor
@@ -18,10 +30,12 @@ public class Show extends BaseEntity {
 
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private Category category;
 
     private String content;
 
+    @Enumerated(EnumType.STRING)
     private Region region;
 
     private LocalDateTime startDate;
@@ -32,4 +46,42 @@ public class Show extends BaseEntity {
 
     private int totalSeats;
 
+    public void sumSeat(int totalSeats) {
+        this.totalSeats = totalSeats;
+    }
+
+    private ShowStatus isDeleted;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Directer_Id", nullable = false)
+    private User user;
+
+    public void updateShow(UpdateShowRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.category = requestDto.getCategory();
+        this.content = requestDto.getContent();
+        this.region = requestDto.getRegion();
+        this.startDate = requestDto.getStartDate();
+        this.endDate = requestDto.getEndDate();
+        this.reservationStartDate = requestDto.getReservationStartDate();
+        this.reservationEndDate = requestDto.getReservationEndDate();
+    }
+
+    public void deleteShow() {
+        this.isDeleted = DELETED;
+    }
+
+
+    public Show(CreateShowRequestDto createShowRequestDto, int totalSeats, User user) {
+        this.title = createShowRequestDto.getTitle();
+        this.category = createShowRequestDto.getCategory();
+        this.content = createShowRequestDto.getContent();
+        this.region = createShowRequestDto.getRegion();
+        this.startDate = createShowRequestDto.getStartDate();
+        this.endDate = createShowRequestDto.getEndDate();
+        this.reservationStartDate = createShowRequestDto.getReservationStartDate();
+        this.reservationEndDate = createShowRequestDto.getReservationEndDate();
+        this.totalSeats = totalSeats;
+        this.user = user;
+    }
 }

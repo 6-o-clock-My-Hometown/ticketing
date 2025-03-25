@@ -20,35 +20,19 @@ public class User {
     @Column(unique = true)
     private String email;
     private String password;
-
     private String nickname;
-    private LocalDate birthday;
+    private String birthday;
     private String phoneNumber;
-
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    public User(String email, String password, String nickname, UserRole userRole, LocalDate birthday, String phoneNumber) {
+    public User(String email, String password, String nickname, String phoneNumber, String birthday, UserRole userRole)  {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.birthday = birthday;
         this.phoneNumber = phoneNumber;
         this.userRole = userRole;
-    }
-
-    private User(Long id, String email, String nickname, UserRole userRole, LocalDate birthday, String phoneNumber) {
-        this.id = id;
-        this.email = email;
-        this.nickname = nickname;
-        this.birthday = birthday;
-        this.phoneNumber = phoneNumber;
-        this.userRole = userRole;
-    }
-
-    private void userUpdate(String nickname,  String phoneNumber ){
-//        this.nickname = nickname;
-//        this.phoneNumber = phoneNumber;
     }
 
     public void updateUser(String nickname, String phoneNumber) {

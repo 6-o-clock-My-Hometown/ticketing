@@ -1,6 +1,7 @@
 package com.example.sparta_ticketing.domain.show.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -110,6 +111,6 @@ public class ShowService {
     }
 
     private Show findShow(Long showId) {
-        return showRepository.findById(showId).orElseThrow(() -> new IllegalArgumentException("해당 공연을 찾을 수 없습니다."));
+        return showRepository.findShowById(showId).orElseThrow(() -> new ShowNotFoundException("해당 공연을 찾을 수 없습니다."));
     }
 }

@@ -21,7 +21,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 60분
 
-    @Value("${JWT.SECRET.KEY}")
+    @Value("2SELqxKueQ4uZpyzvqXECg00k9vSt7ioId2TwvyRDZk=")
     private String secretKey;
     private Key key;
 
@@ -56,7 +56,7 @@ public class JwtUtil {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody();
     }
 }

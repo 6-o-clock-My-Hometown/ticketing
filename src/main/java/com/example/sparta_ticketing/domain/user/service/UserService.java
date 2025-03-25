@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -19,7 +21,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public UserResponse getUser( AuthUser authUser) {
+    public UserResponse getUser(AuthUser authUser) {
         User user = userRepository.findById(authUser.getId()).orElseThrow(() -> new InvalidRequestException("User not found"));
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getBirthday(), user.getPhoneNumber());
     }
@@ -34,13 +36,13 @@ public class UserService {
             throw new InvalidRequestException("잘못된 비밀번호입니다.");
         }
 
-        user.updateUser(user.getNickname(), user.getPhoneNumber());
+        user.updateUser(userUpdateRequest.getNickname(), userUpdateRequest.getPhone());
 
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getBirthday(),  user.getPhoneNumber());
 
     }
 
-//    public Optional<User> findById(Long id) {
-//        return userRepository.findById(id);
-//    }
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 }

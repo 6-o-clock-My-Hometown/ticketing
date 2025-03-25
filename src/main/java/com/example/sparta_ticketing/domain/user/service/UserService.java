@@ -1,18 +1,15 @@
 package com.example.sparta_ticketing.domain.user.service;
 
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.domain.user.dto.UserResponse;
 import com.example.sparta_ticketing.domain.user.dto.UserUpdateRequest;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

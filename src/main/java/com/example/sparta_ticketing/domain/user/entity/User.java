@@ -47,10 +47,12 @@ public class User {
     }
 
     private void userUpdate(String nickname,  String phoneNumber ){
-        this.nickname = nickname;
-        this.phoneNumber = phoneNumber;
+//        this.nickname = nickname;
+//        this.phoneNumber = phoneNumber;
     }
 
     public void updateUser(String nickname, String phoneNumber) {
+        this.nickname = nickname;
+        this.phoneNumber = phoneNumber;
     }
 }

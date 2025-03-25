@@ -1,4 +1,4 @@
-package com.example.sparta_ticketing.config;
+package com.example.sparta_ticketing.common.config;
 
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import org.springframework.security.authentication.AbstractAuthenticationToken;

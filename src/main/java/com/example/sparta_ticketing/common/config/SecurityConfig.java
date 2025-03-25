@@ -1,4 +1,4 @@
-package com.example.sparta_ticketing.config;
+package com.example.sparta_ticketing.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

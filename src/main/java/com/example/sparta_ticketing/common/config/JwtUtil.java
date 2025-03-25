@@ -1,7 +1,7 @@
-package com.example.sparta_ticketing.config;
+package com.example.sparta_ticketing.common.config;
 
 
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -22,7 +22,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 60분
 
-    @Value("${JWT.SECRET.KEY}")
+    @Value("2SELqxKueQ4uZpyzvqXECg00k9vSt7ioId2TwvyRDZk=")
     private String secretKey;
     private Key key;
 

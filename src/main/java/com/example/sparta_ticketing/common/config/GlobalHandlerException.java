@@ -1,5 +1,5 @@
-package com.example.sparta_ticketing.config;
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
+package com.example.sparta_ticketing.common.config;
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

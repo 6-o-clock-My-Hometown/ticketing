@@ -4,6 +4,7 @@ import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.user.dto.UserResponse;
 import com.example.sparta_ticketing.domain.user.dto.UserUpdateRequest;
 import com.example.sparta_ticketing.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +25,7 @@ public class UserController {
     }
 
     @PutMapping("/profiles")
-    public ResponseEntity<UserResponse> updateUser(@AuthenticationPrincipal AuthUser authUser, @RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<UserResponse> updateUser(@AuthenticationPrincipal AuthUser authUser, @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
         return ResponseEntity.ok(userService.updateUser(authUser, userUpdateRequest));
     }
 }

@@ -23,7 +23,7 @@ public class SignupRequest {
     @NotBlank
     private String nickname;
 
-    @Pattern(regexp = "^01[0-1|6-9]-\\d{4}-\\d{4}$", message = "'01X-XXXX-XXXX' ")
+    @Pattern(regexp = "^01[0-1|6-9]-\\d{4}-\\d{4}$", message = "'01X-XXXX-XXXX'")
     private String phoneNumber;
 
     @NotBlank

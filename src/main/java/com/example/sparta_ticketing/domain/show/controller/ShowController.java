@@ -3,6 +3,7 @@ package com.example.sparta_ticketing.domain.show.controller;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.response.PagingShowResponse;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.service.ShowService;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class ShowController {
      공연 목록 조회 API
      */
     @GetMapping("/shows")
-    public ResponseEntity<Page<ShowResponseDto>> getShowList(
+    public ResponseEntity<PagingShowResponse> getShowList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size
     ){

@@ -36,7 +36,7 @@ public class UserService {
             throw new InvalidRequestException("잘못된 비밀번호입니다.");
         }
 
-        user.updateUser(userUpdateRequest.getNickname(), userUpdateRequest.getPhone());
+        user.updateUser(userUpdateRequest.getNickname(), userUpdateRequest.getPhoneNumber());
 
         return new UserResponse(user.getId(), user.getEmail(), user.getNickname(), user.getBirthday(),  user.getPhoneNumber());
 

@@ -18,7 +18,6 @@ public class SeatService {
 
     private SeatRepository seatRepository;
 
-
     @Transactional
     public List<SeatResponse> findAllByShowId(Long showId, Pageable pageable) {
         return seatRepository.findAllByShowId(showId, pageable)

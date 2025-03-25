@@ -33,7 +33,7 @@ public class SeatService {
     public void updateSeat(Long userId, Long showId, Long seatId, ChangeSeatRequest request) {
 
         Show show = showService.getShow(showId);
-        Seat seat = seatRepository.findByIdAndShowId(seatId, showId).orElseThrow(()-> new InvalidRequestException("잘못된 정보입니다."));
+        Seat seat = seatRepository.findByIdAndUserId(seatId, userId).orElseThrow(()-> new InvalidRequestException("잘못된 정보입니다."));
         seat.updateSeat(request.getName(), request.getCount(), request.getPrice());
 
         changeTotalSeatCount(show);

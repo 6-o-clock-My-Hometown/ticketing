@@ -1,12 +1,14 @@
 package com.example.sparta_ticketing.domain.show.entity;
 
 import com.example.sparta_ticketing.common.entity.BaseEntity;
+import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
 import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
+import com.example.sparta_ticketing.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

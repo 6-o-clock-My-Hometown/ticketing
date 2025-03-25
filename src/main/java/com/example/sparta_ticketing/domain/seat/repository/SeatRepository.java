@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface SeatRepository extends JpaRepository<Seat, Long> {
     Page<Seat> findAllByShowId(Long showId, Pageable pageable);
 
-    @Query("select s from Seat s join s.show sh where s.id = :seatId and sh.userId = :userId")
+    @Query("select s from Seat s join s.show sh where s.id = :seatId and sh.user = :userId")
     Optional<Seat> findByIdAndUserId(@Param("seatId") Long id, @Param("userId") Long userId);
 
     @Query("select sum(s.count) from Seat s where s.show= :showId")

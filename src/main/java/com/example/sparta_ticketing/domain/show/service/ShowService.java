@@ -2,6 +2,8 @@ package com.example.sparta_ticketing.domain.show.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
+import com.example.sparta_ticketing.domain.seat.entity.Seat;
+import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
 import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
@@ -19,13 +21,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
 public class ShowService {
     private final ShowRepository showRepository;
     private final UserService userService;
-    private final SeatService seatService;
+    private final SeatRepository seatRepository;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
@@ -42,7 +47,11 @@ public class ShowService {
         Show show = new Show(createShowRequestDto, totalSeats, user);
 
         Show savedShow = showRepository.save(show);
-        seatService.saveSeats(savedShow, createShowRequestDto.getSeats());
+        List<Seat> seats = createShowRequestDto.getSeats().stream()
+                .map(dto -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
+                .collect(Collectors.toList());
+
+        seatRepository.saveAll(seats);
     }
 
     @Transactional(readOnly = true)

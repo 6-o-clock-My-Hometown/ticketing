@@ -1,6 +1,6 @@
 package com.example.sparta_ticketing.domain.show.entity;
 
-import com.example.sparta_ticketing.common.entity.Timestamped;
+import com.example.sparta_ticketing.common.entity.BaseEntity;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "shows")
 @NoArgsConstructor
-public class Show extends Timestamped {
+public class Show extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

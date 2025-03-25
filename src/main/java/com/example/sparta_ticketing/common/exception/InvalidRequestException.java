@@ -1,4 +1,4 @@
-package com.example.sparta_ticketing.domain.common.exception;
+package com.example.sparta_ticketing.common.exception;
 
 public class InvalidRequestException extends RuntimeException {
     public InvalidRequestException(String message) {

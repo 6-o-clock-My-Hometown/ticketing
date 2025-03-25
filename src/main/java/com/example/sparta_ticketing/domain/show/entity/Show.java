@@ -50,6 +50,10 @@ public class Show extends BaseEntity {
 
     private ShowStatus isDeleted;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Directer_Id", nullable = false)
+    private User user;
+
     public void updateShow(UpdateShowRequestDto requestDto) {
         this.title = requestDto.getTitle();
         this.category = requestDto.getCategory();
@@ -63,5 +67,19 @@ public class Show extends BaseEntity {
 
     public void deleteShow() {
         this.isDeleted = DELETED;
+    }
+
+
+    public Show(CreateShowRequestDto createShowRequestDto, int totalSeats, User user) {
+        this.title = createShowRequestDto.getTitle();
+        this.category = createShowRequestDto.getCategory();
+        this.content = createShowRequestDto.getContent();
+        this.region = createShowRequestDto.getRegion();
+        this.startDate = createShowRequestDto.getStartDate();
+        this.endDate = createShowRequestDto.getEndDate();
+        this.reservationStartDate = createShowRequestDto.getReservationStartDate();
+        this.reservationEndDate = createShowRequestDto.getReservationEndDate();
+        this.totalSeats = totalSeats;
+        this.user = user;
     }
 }

@@ -1,17 +1,56 @@
 package com.example.sparta_ticketing.domain.show.service;
 
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
+import com.example.sparta_ticketing.domain.seat.service.SeatService;
+import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
+import com.example.sparta_ticketing.domain.user.entity.User;
+import com.example.sparta_ticketing.domain.user.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
 public class ShowService {
-
     private final ShowRepository showRepository;
+    private final UserService userService;
+    private final SeatService seatService;
+
+    @Transactional
+    public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
+        User user = userService.findById(authUser.getId()).orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
+
+        int totalSeats = 0;
+        for (CreateShowSeatsRequestDto seat: createShowRequestDto.getSeats()) {
+            totalSeats += seat.getSeatCount();
+        }
+        if(totalSeats == 0){
+            throw new InvalidRequestException("좌석의 총 개수가 0이 될 수 없습니다.");
+        }
+
+        Show show = new Show(createShowRequestDto, totalSeats, user);
+
+        Show savedShow = showRepository.save(show);
+        seatService.saveSeats(savedShow, createShowRequestDto.getSeats());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ShowResponseDto> getShowList(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Show> showPage = showRepository.findAll(pageable);
+        return showPage.map(ShowResponseDto::toDto);
+    }
 
     /**
      * 특정 공연 조회

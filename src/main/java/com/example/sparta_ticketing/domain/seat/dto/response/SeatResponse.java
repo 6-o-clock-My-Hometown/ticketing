@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SeatResponse {
     private Long id;
-    private Show show;
+    private Long showId;
     private SeatEnum name;
     private int count;
     private int price;
@@ -19,7 +19,7 @@ public class SeatResponse {
     public static SeatResponse toDto(Seat seat){
         return new SeatResponse(
                 seat.getId(),
-                seat.getShow(),
+                seat.getShow().getId(),
                 seat.getName(),
                 seat.getCount(),
                 seat.getPrice());

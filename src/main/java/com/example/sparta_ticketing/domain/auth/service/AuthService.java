@@ -19,20 +19,20 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-//    @Transactional
-//    public SignupResponse signup(SignupRequest request) {
-//
-//        if (userRepository.existsByEmail(request.getEmail())) {
-//            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
-//        }
-//
-//        String encodedPassword = passwordEncoder.encode(request.getPassword());
-//
-////        new User(request.getEmail(), encodedPassword, request.getNickname(), request.getUserRole())
-////
-////        jwtUtil.createToken()
-////
-////        return new SignupResponse()}
-//        return new SignupResponse()
-//
+    @Transactional
+    public SignupResponse signup(SignupRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+//        new User(request.getEmail(), encodedPassword, request.getNickname(), request.getUserRole())
+
+//        jwtUtil.createToken()
+
+        return new SignupResponse();
+
+    }
 }

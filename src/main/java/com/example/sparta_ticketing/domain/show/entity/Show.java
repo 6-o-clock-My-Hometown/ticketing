@@ -2,16 +2,18 @@ package com.example.sparta_ticketing.domain.show.entity;
 
 import com.example.sparta_ticketing.common.entity.BaseEntity;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
-import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
+import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
 import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
-import com.example.sparta_ticketing.domain.user.entity.User;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
+import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
 
 import static com.example.sparta_ticketing.domain.show.enums.ShowStatus.DELETED;
 
@@ -41,6 +43,10 @@ public class Show extends BaseEntity {
     private LocalDateTime reservationEndDate;
 
     private int totalSeats;
+
+    public void sumSeat(int totalSeats) {
+        this.totalSeats = totalSeats;
+    }
 
     private ShowStatus isDeleted;
 

@@ -1,17 +1,20 @@
 package com.example.sparta_ticketing.domain.seat.service;
 
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.domain.seat.dto.request.ChangeSeatRequest;
 import com.example.sparta_ticketing.domain.seat.dto.response.SeatResponse;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
+import com.example.sparta_ticketing.domain.show.service.ShowService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,10 +24,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SeatService {
 
-    private SeatRepository seatRepository;
+    private final SeatRepository seatRepository;
+    private final ShowService showService;
 
-
-    @Transactional
+    @Transactional(readOnly = true)
     public List<SeatResponse> findAllByShowId(Long showId, Pageable pageable) {
         return seatRepository.findAllByShowId(showId, pageable)
                 .map(SeatResponse::toDto)
@@ -32,13 +35,28 @@ public class SeatService {
     }
 
 
+    @Transactional
+    public void updateSeat(Long userId, Long showId, Long seatId, ChangeSeatRequest request) {
 
-    public void saveSeats(Show show, List<CreateShowSeatsRequestDto> seatDto) {
-        List<Seat> seats = seatDto.stream()
-                .map(dto -> new Seat(show, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
-                .collect(Collectors.toList());
+        Show show = showService.getShow(showId);
+        Seat seat = seatRepository.findByIdAndUserId(seatId, userId).orElseThrow(()-> new InvalidRequestException("잘못된 정보입니다."));
+        seat.updateSeat(request.getName(), request.getCount(), request.getPrice());
 
-        seatRepository.saveAll(seats);
+        changeTotalSeatCount(show);
     }
+
+    private void changeTotalSeatCount(Show show) {
+        show.sumSeat(seatRepository.sumSeatCountByShowId(show.getId()));
+
+
+
+//     public void saveSeats(Show show, List<CreateShowSeatsRequestDto> seatDto) {
+//         List<Seat> seats = seatDto.stream()
+//                 .map(dto -> new Seat(show, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
+//                 .collect(Collectors.toList());
+
+//         seatRepository.saveAll(seats);
+
+//     }
 
 }

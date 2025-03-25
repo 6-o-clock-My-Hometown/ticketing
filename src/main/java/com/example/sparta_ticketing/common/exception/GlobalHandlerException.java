@@ -1,10 +1,8 @@
-package com.example.sparta_ticketing.config;
+package com.example.sparta_ticketing.common.exception;
 
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,6 +16,18 @@ public class GlobalHandlerException {
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<Map<String, Object>> invalidRequestException(InvalidRequestException ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
+        return getErrorResponse(status, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> userNotFoundException(UserNotFoundException ex) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return getErrorResponse(status, ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Map<String, Object>> authException(AuthException ex) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         return getErrorResponse(status, ex.getMessage());
     }
 

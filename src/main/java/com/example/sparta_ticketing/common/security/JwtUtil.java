@@ -1,6 +1,6 @@
-package com.example.sparta_ticketing.config;
+package com.example.sparta_ticketing.common.security;
 
-import com.example.sparta_ticketing.domain.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

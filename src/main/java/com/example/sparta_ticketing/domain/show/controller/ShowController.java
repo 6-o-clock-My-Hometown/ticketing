@@ -1,5 +1,6 @@
 package com.example.sparta_ticketing.domain.show.controller;
 
+import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.service.ShowService;
@@ -19,10 +20,10 @@ public class ShowController {
      */
     @GetMapping("shows/{showId}")
     public ResponseEntity<ShowResponseDto> getShow (
-            @AuthenticationPrincipal Auther auther,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        return ResponseEntity.ok(showService.getShow(auther, showId));
+        return ResponseEntity.ok(showService.getShow(authUser, showId));
     }
 
     /**
@@ -30,11 +31,11 @@ public class ShowController {
      */
     @PatchMapping("/shows/{showId}")
     public void updateShow(
-            @AuthenticationPrincipal Auther auther,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId,
             @RequestBody UpdateShowRequestDto updateShowRequestDto
     ) {
-        showService.updateShow(auther, showId, updateShowRequestDto);
+        showService.updateShow(authUser, showId, updateShowRequestDto);
     }
 
     /**
@@ -42,9 +43,9 @@ public class ShowController {
      */
     @DeleteMapping("/show/{showId}")
     public void deleteShow(
-            @AuthenticationPrincipal Auther auther,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        showService.deleteShow(auther, showId);
+        showService.deleteShow(authUser, showId);
     }
 }

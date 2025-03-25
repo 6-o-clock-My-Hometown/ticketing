@@ -21,7 +21,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 60분
 
-    @Value("2SELqxKueQ4uZpyzvqXECg00k9vSt7ioId2TwvyRDZk=")
+    @Value("${JWT.SECRET.KEY}")
     private String secretKey;
     private Key key;
 

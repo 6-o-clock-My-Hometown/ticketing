@@ -21,7 +21,6 @@ public class AuthUser {
         this.userRole = userRole;
     }
 
-    // UserRole 을 GrantedAuthority 로 변환
     public List<GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(userRole.getUserRole()));
     }

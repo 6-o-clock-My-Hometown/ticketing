@@ -80,6 +80,6 @@ public class Show extends BaseEntity {
         this.reservationEndDate = createShowRequestDto.getReservationEndDate();
         this.totalSeats = totalSeats;
         this.user = user;
-        this.isDeleted = ACTIVE;
+        this.status = NOT_DELETED;
     }
 }

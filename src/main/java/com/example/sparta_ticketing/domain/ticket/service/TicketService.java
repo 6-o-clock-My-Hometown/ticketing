@@ -2,6 +2,7 @@ package com.example.sparta_ticketing.domain.ticket.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.UserNotFoundException;
+import com.example.sparta_ticketing.common.service.RedisService;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.entity.Show;
@@ -13,8 +14,6 @@ import com.example.sparta_ticketing.domain.ticket.repository.TicketRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ public class TicketService {
     private final UserService userService;
     private final ShowService showService;
     private final SeatService seatService;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
     @Transactional
     public TicketResponse reserveSeat(Long userId, CreateSeatReservationRequest request) {
@@ -37,16 +36,14 @@ public class TicketService {
         Show show = showService.getShow(request.getShowId());
         Seat seat = seatService.getSeat(request.getSeatId(), request.getShowId());
 
-        //redis count-1
         String remainSeatKey = "show:"+ show.getId() + ":seat:" + seat.getId();
-        Long remain = redisTemplate.opsForValue().decrement(remainSeatKey);
+        Long remain = redisService.decrement(remainSeatKey);
 
         if(remain == null){
             throw new InvalidRequestException("좌석 정보가 없습니다.");
         }
 
         if(remain < 0){
-            redisTemplate.opsForValue().increment(remainSeatKey);
             throw new InvalidRequestException("해당 좌석 등급은 매진되었습니다.");
         }
 

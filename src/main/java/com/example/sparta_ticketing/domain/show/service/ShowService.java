@@ -2,6 +2,7 @@ package com.example.sparta_ticketing.domain.show.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
+import com.example.sparta_ticketing.common.service.RedisService;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -38,7 +39,7 @@ public class ShowService {
     private final ShowRepository showRepository;
     private final UserService userService;
     private final SeatRepository seatRepository;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
@@ -61,9 +62,8 @@ public class ShowService {
 
         seatRepository.saveAll(seats);
 
-        // 레디스 저장
         for (Seat seat: seats) {
-            redisTemplate.opsForValue().set("show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+            redisService.set("show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
         }
     }
 

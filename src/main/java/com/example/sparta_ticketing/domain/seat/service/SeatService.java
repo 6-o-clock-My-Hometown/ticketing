@@ -1,6 +1,7 @@
 package com.example.sparta_ticketing.domain.seat.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.service.RedisService;
 import com.example.sparta_ticketing.domain.seat.dto.request.ChangeSeatRequest;
 import com.example.sparta_ticketing.domain.seat.dto.response.SeatResponse;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
@@ -22,7 +23,7 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final ShowService showService;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
     @Transactional(readOnly = true)
     public List<SeatResponse> findAllByShowId(Long showId, Pageable pageable) {
@@ -40,7 +41,7 @@ public class SeatService {
         seat.updateSeat(request.getName(), request.getCount(), request.getPrice());
 
         changeTotalSeatCount(show);
-        redisTemplate.opsForValue().set("show:"+ seat.getShow().getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+        redisService.set("show:"+ seat.getShow().getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
     }
 
     private void changeTotalSeatCount(Show show) {

@@ -16,11 +16,15 @@ import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
+import com.sun.jdi.LongValue;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +38,7 @@ public class ShowService {
     private final ShowRepository showRepository;
     private final UserService userService;
     private final SeatRepository seatRepository;
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
@@ -55,6 +60,11 @@ public class ShowService {
                 .collect(Collectors.toList());
 
         seatRepository.saveAll(seats);
+
+        // 레디스 저장
+        for (Seat seat: seats) {
+            redisTemplate.opsForValue().set("show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+        }
     }
 
     @Transactional(readOnly = true)

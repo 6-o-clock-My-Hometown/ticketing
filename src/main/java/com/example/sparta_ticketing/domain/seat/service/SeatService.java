@@ -9,6 +9,7 @@ import com.example.sparta_ticketing.domain.show.service.ShowService;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class SeatService {
 
     private final SeatRepository seatRepository;
     private final ShowService showService;
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional(readOnly = true)
     public List<SeatResponse> findAllByShowId(Long showId, Pageable pageable) {
@@ -38,11 +40,18 @@ public class SeatService {
         seat.updateSeat(request.getName(), request.getCount(), request.getPrice());
 
         changeTotalSeatCount(show);
+        redisTemplate.opsForValue().set("show:"+ seat.getShow().getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
     }
 
     private void changeTotalSeatCount(Show show) {
         show.sumSeat(seatRepository.sumSeatCountByShowId(show.getId()));
 
+    }
+
+
+    public Seat getSeat(Long showId, Long seatId) {
+        Show show = showService.getShow(showId);
+        return seatRepository.findByIdAndShowId(seatId, show.getId()).orElseThrow(() -> new InvalidRequestException("조회된 좌석 정보가 없습니다."));
     }
 
 //     public void saveSeats(Show show, List<CreateShowSeatsRequestDto> seatDto) {

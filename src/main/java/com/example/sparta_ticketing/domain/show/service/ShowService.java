@@ -2,11 +2,10 @@ package com.example.sparta_ticketing.domain.show.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
-import com.example.sparta_ticketing.common.service.RedisService;
+import com.example.sparta_ticketing.common.redis.RedisService;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
-import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
@@ -17,15 +16,11 @@ import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
-import com.sun.jdi.LongValue;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

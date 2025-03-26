@@ -1,7 +1,7 @@
 package com.example.sparta_ticketing.domain.seat.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
-import com.example.sparta_ticketing.common.service.RedisService;
+import com.example.sparta_ticketing.common.redis.RedisService;
 import com.example.sparta_ticketing.domain.seat.dto.request.ChangeSeatRequest;
 import com.example.sparta_ticketing.domain.seat.dto.response.SeatResponse;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
@@ -10,7 +10,6 @@ import com.example.sparta_ticketing.domain.show.service.ShowService;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

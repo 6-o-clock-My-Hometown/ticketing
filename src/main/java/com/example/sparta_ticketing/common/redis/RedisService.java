@@ -1,4 +1,4 @@
-package com.example.sparta_ticketing.common.service;
+package com.example.sparta_ticketing.common.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

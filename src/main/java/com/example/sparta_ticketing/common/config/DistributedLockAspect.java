@@ -2,10 +2,8 @@ package com.example.sparta_ticketing.common.config;
 
 
 import com.example.sparta_ticketing.common.redis.RedisLockService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.logging.Log;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -23,11 +21,11 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 @Aspect
 @Component
-public class LoggingAspect {
+public class DistributedLockAspect {
     private final RedisLockService redisLockService;
 
     @Around("@annotation(distributedLock)")
-    public Object applyLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
+    public Object applyLock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock){
         //lockKey를 동적 파싱
         String lockKey = parseSpELKey(joinPoint, distributedLock.key());
         log.info(joinPoint.getSignature().getName());

@@ -53,7 +53,7 @@ public class TicketService {
     }
 
     @Transactional
-    public void reserveSeatWithoutLock(Long userId, CreateSeatReservationRequest request) {
+    public TicketResponse reserveSeatWithoutLock(Long userId, CreateSeatReservationRequest request) {
         User user = userService.findById(userId)
                 .orElseThrow(()
                         -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
@@ -72,8 +72,8 @@ public class TicketService {
             throw new InvalidRequestException("해당 좌석 등급은 매진되었습니다.");
         }
 
-//        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
-//        return TicketResponse.toDto(ticket);
+        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
+        return TicketResponse.toDto(ticket);
     }
 
 

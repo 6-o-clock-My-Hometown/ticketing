@@ -12,6 +12,7 @@ import com.example.sparta_ticketing.domain.show.service.ShowService;
 import com.example.sparta_ticketing.domain.ticket.dto.request.CreateSeatReservationRequest;
 import com.example.sparta_ticketing.domain.ticket.dto.response.TicketResponse;
 import com.example.sparta_ticketing.domain.ticket.entity.Ticket;
+import com.example.sparta_ticketing.domain.ticket.enums.TicketStatus;
 import com.example.sparta_ticketing.domain.ticket.repository.TicketRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
@@ -50,7 +51,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponse reserveSeatWithoutLock(Long userId, CreateSeatReservationRequest request) {
+    public void reserveSeatWithoutLock(Long userId, CreateSeatReservationRequest request) {
         User user = userService.findById(userId)
                 .orElseThrow(()
                         -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
@@ -69,8 +70,18 @@ public class TicketService {
             throw new InvalidRequestException("해당 좌석 등급은 매진되었습니다.");
         }
 
-        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
-        return TicketResponse.toDto(ticket);
+//        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
+//        return TicketResponse.toDto(ticket);
+    }
+
+
+    @Transactional
+    public void cancelReserveSeat(Long userId, Long ticketId) {
+        Ticket ticket = ticketRepository.getTicketIdAndUserId(ticketId, userId).orElseThrow(() -> new InvalidRequestException("예매 정보가 존재하지 않습니다."));
+        String remainSeatKey = "show:" + ticket.getShow().getId() + ":seat:" + ticket.getSeat().getId();
+        ticket.cancelTicket();
+
+        redisService.increment(remainSeatKey);
     }
 
 
@@ -91,6 +102,6 @@ public class TicketService {
                 throw new InvalidRequestException("해당 좌석 등급은 매진되었습니다.");
             }
 
-            return ticketRepository.save(new Ticket(user, seat, show));
+            return ticketRepository.save(new Ticket(user, seat, show, TicketStatus.PURCHASED));
     }
 }

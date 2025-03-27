@@ -29,4 +29,11 @@ public class TicketController {
     public ResponseEntity<TicketResponse> getReserve (@AuthenticationPrincipal AuthUser user, @PathVariable Long id) {
         return ResponseEntity.ok(ticketService.getReserve(user.getId(), id));
     }
+
+    @Secured(UserRole.Authority.USER)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelReserveSeat (@AuthenticationPrincipal AuthUser user, @PathVariable Long id) {
+        ticketService.cancelReserveSeat(user.getId(), id);
+        return ResponseEntity.ok().build();
+    }
 }

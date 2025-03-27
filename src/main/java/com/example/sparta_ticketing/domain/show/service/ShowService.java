@@ -24,7 +24,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -57,6 +59,12 @@ public class ShowService {
                 .collect(Collectors.toList());
 
         seatRepository.saveAll(seats);
+
+        // 만료 시간 가져오기
+        String key = "ticket:canReserve:show:"+ savedShow.getId();
+        Long ttl = redisService.getTtlHour(createShowRequestDto.getReservationEndDate());
+        // 예매가능 기간 체크
+        redisService.setWithTtl(key,String.valueOf(true), ttl, TimeUnit.HOURS);
 
         for (Seat seat: seats) {
             redisService.set("ticket:show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));

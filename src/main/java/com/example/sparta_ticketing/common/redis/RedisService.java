@@ -5,7 +5,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,8 @@ public class RedisService {
         return redisTemplate.opsForValue().decrement(key);
     }
 
-    public void setWithTtl(String key, String value,  Duration ttl){
-        redisTemplate.opsForValue().set(key,value, ttl);
+    public void setWithTtl(String key, String value,  Long ttl, TimeUnit timeUnit){
+        redisTemplate.opsForValue().set(key,value, ttl, timeUnit);
     }
 
     public Boolean exists(String key){
@@ -38,4 +40,28 @@ public class RedisService {
     public void delete(Set<String> key){redisTemplate.delete(key);}
 
     public Set<String> keys(String pattern){return redisTemplate.keys(pattern);}
+
+    public Long getTtlHour(LocalDateTime endDateTime){
+        // 현재시간
+        LocalDateTime now = LocalDateTime.now();
+
+        // ttl 계산
+        return Duration.between(now, endDateTime).toHours();
+    }
+
+    public Long getTtlSecond(String key, LocalDateTime endDateTime){
+        // 현재시간
+        LocalDateTime now = LocalDateTime.now();
+
+        // ttl 계산
+        return Duration.between(now, endDateTime).getSeconds();
+    }
+
+    public Long getTtlMinute(String key, LocalDateTime endDateTime){
+        // 현재시간
+        LocalDateTime now = LocalDateTime.now();
+
+        // ttl 계산
+        return Duration.between(now, endDateTime).toMinutes();
+    }
 }

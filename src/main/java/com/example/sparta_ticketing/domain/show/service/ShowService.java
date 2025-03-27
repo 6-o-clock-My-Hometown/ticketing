@@ -49,8 +49,9 @@ public class ShowService {
         }
 
         Show show = new Show(createShowRequestDto, totalSeats, user);
-
         Show savedShow = showRepository.save(show);
+        redisService.set("viewCount:show:" + savedShow.getId(), "0");
+
         List<Seat> seats = createShowRequestDto.getSeats().stream()
                 .map(dto -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
                 .collect(Collectors.toList());
@@ -58,7 +59,7 @@ public class ShowService {
         seatRepository.saveAll(seats);
 
         for (Seat seat: seats) {
-            redisService.set("show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+            redisService.set("ticket:show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
         }
     }
 
@@ -70,6 +71,7 @@ public class ShowService {
                 .stream()
                 .map(ShowResponseDto::toDto)
                 .toList();
+
         return new PagingShowResponse(
                 shows,
                 showPage.getNumber(),
@@ -89,6 +91,19 @@ public class ShowService {
     public Show getShow(Long showId) {
         return findShow(showId);
     }
+
+    @Transactional(readOnly = true)
+    public ShowResponseDto findByShow(Long showId, Long userId) {
+        String key = "view:show:"+ showId + ":user:" + userId;
+
+        if(!redisService.exists(key)){
+            redisService.increment("viewCount:show:" + showId);
+            redisService.set(key, "1");
+        }
+
+        return ShowResponseDto.form(findShow(showId), Integer.parseInt(redisService.get("viewCount:show:" + showId)));
+    }
+
 
     /**
      * 특정 공연 정보 수정

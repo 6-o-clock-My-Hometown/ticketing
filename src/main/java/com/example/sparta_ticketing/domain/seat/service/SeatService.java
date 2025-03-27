@@ -40,7 +40,7 @@ public class SeatService {
         seat.updateSeat(request.getName(), request.getCount(), request.getPrice());
 
         changeTotalSeatCount(show);
-        redisService.set("show:"+ seat.getShow().getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+        redisService.set("ticket:show:"+ seat.getShow().getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
     }
 
     private void changeTotalSeatCount(Show show) {
@@ -53,14 +53,5 @@ public class SeatService {
         Show show = showService.getShow(showId);
         return seatRepository.findByIdAndShowId(seatId, show.getId()).orElseThrow(() -> new InvalidRequestException("조회된 좌석 정보가 없습니다."));
     }
-
-//     public void saveSeats(Show show, List<CreateShowSeatsRequestDto> seatDto) {
-//         List<Seat> seats = seatDto.stream()
-//                 .map(dto -> new Seat(show, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
-//                 .collect(Collectors.toList());
-
-//         seatRepository.saveAll(seats);
-
-//     }
 
 }

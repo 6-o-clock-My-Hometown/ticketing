@@ -1,8 +1,8 @@
 package com.example.sparta_ticketing.domain.ticket.service;
 
+import com.example.sparta_ticketing.common.config.DistributedLock;
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.UserNotFoundException;
-import com.example.sparta_ticketing.common.redis.RedisLockRepository;
 import com.example.sparta_ticketing.common.redis.RedisLockService;
 import com.example.sparta_ticketing.common.redis.RedisService;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
@@ -32,6 +32,7 @@ public class TicketService {
     private final RedisLockService redisLockService;
 
     @Transactional
+    @DistributedLock(key = "'lock:show:' + #request.showId + ':seat:' + #request.seatId")
     public TicketResponse reserveSeat(Long userId, CreateSeatReservationRequest request) {
         User user = userService.findById(userId)
                 .orElseThrow(()
@@ -40,12 +41,13 @@ public class TicketService {
         Show show = showService.getShow(request.getShowId());
         Seat seat = seatService.getSeat(request.getSeatId(), request.getShowId());
 
-        String remainSeatKey = "show:" + show.getId() + ":seat:" + seat.getId();
-        String lockKey = "lock:" + remainSeatKey;
+        String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
+//        String lockKey = "lock:" + remainSeatKey;
 
-        Ticket ticket = redisLockService.executeWithLock(lockKey,
-                () -> reserveTicket(user, seat, show, remainSeatKey)
-        );
+//        Ticket ticket = redisLockService.executeWithLock(lockKey,
+//                () -> reserveTicket(user, seat, show, remainSeatKey)
+//        );
+        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
 
         return TicketResponse.toDto(ticket);
     }
@@ -59,7 +61,7 @@ public class TicketService {
         Show show = showService.getShow(request.getShowId());
         Seat seat = seatService.getSeat(request.getSeatId(), request.getShowId());
 
-        String remainSeatKey = "show:"+ show.getId() + ":seat:" + seat.getId();
+        String remainSeatKey = "ticket:show:"+ show.getId() + ":seat:" + seat.getId();
         Long remain = redisService.decrement(remainSeatKey);
 
         if(remain == null){
@@ -78,7 +80,7 @@ public class TicketService {
     @Transactional
     public void cancelReserveSeat(Long userId, Long ticketId) {
         Ticket ticket = ticketRepository.getTicketIdAndUserId(ticketId, userId).orElseThrow(() -> new InvalidRequestException("예매 정보가 존재하지 않습니다."));
-        String remainSeatKey = "show:" + ticket.getShow().getId() + ":seat:" + ticket.getSeat().getId();
+        String remainSeatKey = "ticket:show:" + ticket.getShow().getId() + ":seat:" + ticket.getSeat().getId();
         ticket.cancelTicket();
 
         redisService.increment(remainSeatKey);

@@ -33,7 +33,7 @@ public class ShowResponseDto {
 
     private int totalSeats;
 
-    private int viewCount;
+    private long viewCount;
 
     public static ShowResponseDto toDto(Show show) {
         return ShowResponseDto.builder()
@@ -49,7 +49,7 @@ public class ShowResponseDto {
                 .build();
     }
 
-    public static ShowResponseDto form(Show show, int viewCount) {
+    public static ShowResponseDto form(Show show, long viewCount) {
         return ShowResponseDto.builder()
                 .title(show.getTitle())
                 .category(show.getCategory())

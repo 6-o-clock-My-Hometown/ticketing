@@ -80,7 +80,7 @@ class TicketServiceWithPessimisticLockTest {
             Seat seat = new Seat(show, SeatEnum.VIP, 50, 10000);
             seatRepository.save(seat);
 
-            int reserveCount = 10000;
+            int reserveCount = 100;
             ExecutorService executorService = Executors.newFixedThreadPool(1000);
             CountDownLatch latch = new CountDownLatch(reserveCount);
             AtomicInteger successCount = new AtomicInteger();

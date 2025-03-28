@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class TicketServiceWithoutLockTest {
+class TicketServiceWithPessimisticLockTest {
 
     @Autowired
     private TicketService ticketService;
@@ -46,19 +46,20 @@ class TicketServiceWithoutLockTest {
 
 
     @Test
-    void 동시성제어없이_동시예매시_실패() throws InterruptedException{
+    void 비관적락_동시성_제어_평균처리시간_테스트() throws InterruptedException {
+        int repeatCount = 5;
         long totalElapsedTime = 0;
         int totalSuccess = 0;
         int totalFail = 0;
 
+            // 초기화 (각 테스트마다 새로운 유저, 공연, 좌석 필요)
             User user = new User(
-                    "tes@example.com",
+                    "test@example.com",
                     "password",
                     "테스트유저",
                     "010-1234-5678",
                     "1995-05-10",
                     UserRole.ROLE_USER);
-
             userRepository.save(user);
 
             Show show = new Show(
@@ -74,7 +75,6 @@ class TicketServiceWithoutLockTest {
                     50,
                     user
             );
-
             showRepository.save(show);
 
             Seat seat = new Seat(show, SeatEnum.VIP, 50, 10000);
@@ -83,49 +83,44 @@ class TicketServiceWithoutLockTest {
             int reserveCount = 10000;
             ExecutorService executorService = Executors.newFixedThreadPool(1000);
             CountDownLatch latch = new CountDownLatch(reserveCount);
-
             AtomicInteger successCount = new AtomicInteger();
             AtomicInteger failCount = new AtomicInteger();
 
             long startTime = System.currentTimeMillis();
 
             for (int i = 0; i < reserveCount; i++) {
-                final int userId = i;
                 executorService.submit(() -> {
                     try {
                         CreateSeatReservationRequest request =
                                 new CreateSeatReservationRequest(seat.getId(), show.getId());
-
-                        ticketService.reserveSeatWithoutLock(user.getId(), request);
+                        ticketService.reserveSeatWithPessimisticLock(user.getId(), request);
                         successCount.incrementAndGet();
-
                     } catch (InvalidRequestException e) {
-                        failCount.incrementAndGet(); // 예매 실패 (매진 등)
+                        failCount.incrementAndGet();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }finally {
+                    } finally {
                         latch.countDown();
                     }
                 });
             }
 
-        latch.await();
-        long endTime = System.currentTimeMillis();
+            latch.await();
+            long endTime = System.currentTimeMillis();
 
-        totalElapsedTime += endTime - startTime;;
-        totalSuccess += successCount.get();
-        totalFail += failCount.get();
+            totalElapsedTime += endTime - startTime;;
+            totalSuccess += successCount.get();
+            totalFail += failCount.get();
 
-        // 테스트 종료 후 저장된 티켓 초기화 (안하면 중복으로 누적됨)
-        ticketRepository.deleteAll();
-        seatRepository.deleteAll();
-        showRepository.deleteAll();
-        userRepository.deleteAll();
+            // 테스트 종료 후 저장된 티켓 초기화 (안하면 중복으로 누적됨)
+            ticketRepository.deleteAll();
+            seatRepository.deleteAll();
+            showRepository.deleteAll();
+            userRepository.deleteAll();
 
         System.out.println("----- 평균 결과 -----");
-        System.out.println("평균 처리 시간: " + totalElapsedTime + "ms");
-        System.out.println("평균 성공 수: " + totalSuccess);
+        System.out.println("평균 처리 시간: " + totalElapsedTime+ "ms");
+        System.out.println("평균 성공 수: " + totalSuccess );
         System.out.println("평균 실패 수: " + totalFail);
     }
-
 }

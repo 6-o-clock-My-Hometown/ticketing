@@ -49,9 +49,10 @@ public class ShowController {
      */
     @GetMapping("/shows/{showId}")
     public ResponseEntity<ShowResponseDto> getShow (
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        return ResponseEntity.ok(ShowResponseDto.toDto(showService.getShow(showId)));
+        return ResponseEntity.ok(showService.findByShow(showId, authUser.getId()));
     }
 
     /**

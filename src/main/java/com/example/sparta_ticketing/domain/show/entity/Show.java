@@ -68,6 +68,10 @@ public class Show extends BaseEntity {
         this.status = DELETED;
     }
 
+    public void expiredShow() {
+        this.status = EXPIRED;
+    }
+
 
     public Show(CreateShowRequestDto createShowRequestDto, int totalSeats, User user) {
         this.title = createShowRequestDto.getTitle();

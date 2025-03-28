@@ -49,7 +49,7 @@ public class TicketService {
 
         if(!redisService.exists(remainSeatKey)) {
             throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
-        }
+        } 
 
         Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
         return TicketResponse.toDto(ticket);

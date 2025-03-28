@@ -49,7 +49,7 @@ public class RedisService {
         return Duration.between(now, endDateTime).toHours();
     }
 
-    public Long getTtlSecond(String key, LocalDateTime endDateTime){
+    public Long getTtlSecond(LocalDateTime endDateTime){
         // 현재시간
         LocalDateTime now = LocalDateTime.now();
 
@@ -57,7 +57,7 @@ public class RedisService {
         return Duration.between(now, endDateTime).getSeconds();
     }
 
-    public Long getTtlMinute(String key, LocalDateTime endDateTime){
+    public Long getTtlMinute(LocalDateTime endDateTime){
         // 현재시간
         LocalDateTime now = LocalDateTime.now();
 

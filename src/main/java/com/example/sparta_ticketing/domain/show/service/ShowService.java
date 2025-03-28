@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -40,7 +41,8 @@ public class ShowService {
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
-        User user = userService.findById(authUser.getId()).orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
+        User user = userService.findById(authUser.getId())
+                .orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
 
         int totalSeats = 0;
         for (CreateShowSeatsRequestDto seat: createShowRequestDto.getSeats()) {
@@ -55,16 +57,19 @@ public class ShowService {
         redisService.set("viewCount:show:" + savedShow.getId(), "0");
 
         List<Seat> seats = createShowRequestDto.getSeats().stream()
-                .map(dto -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
+                .map(dto
+                        -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
                 .collect(Collectors.toList());
 
         seatRepository.saveAll(seats);
 
         // 만료 시간 가져오기
-        String key = "ticket:canReserve:show:"+ savedShow.getId();
+        String key = "canReserve:show:"+ savedShow.getId();
         Long ttl = redisService.getTtlHour(createShowRequestDto.getReservationEndDate());
+        Long ttlMinute = redisService.getTtlMinute(createShowRequestDto.getReservationEndDate());
         // 예매가능 기간 체크
-        redisService.setWithTtl(key,String.valueOf(true), ttl, TimeUnit.HOURS);
+        //redisService.setWithTtl(key,String.valueOf(true), ttl, TimeUnit.HOURS);
+        redisService.setWithTtl(key,String.valueOf(1), ttlMinute, TimeUnit.MINUTES);
 
         for (Seat seat: seats) {
             redisService.set("ticket:show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
@@ -138,7 +143,22 @@ public class ShowService {
         findShow.deleteShow();
     }
 
-    private Show findShow(Long showId) {
-        return showRepository.findShowById(showId).orElseThrow(() -> new ShowNotFoundException("해당 공연을 찾을 수 없습니다."));
+    @Transactional
+    public void changeShowStatus(Long showId) {
+        Show findShow = findShow(showId);
+        findShow.expiredShow();
     }
+
+    @Transactional(readOnly = true)
+    public List<Show> findExpiredShow() {
+        return showRepository.findExpiredShow(LocalDateTime.now(), ShowStatus.NOT_DELETED);
+    }
+
+
+    private Show findShow(Long showId) {
+        return showRepository.findShowById(showId, ShowStatus.NOT_DELETED)
+                .orElseThrow(() -> new ShowNotFoundException("해당 공연을 찾을 수 없습니다."));
+    }
+
+
 }

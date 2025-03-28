@@ -47,7 +47,7 @@ public class TicketService {
 
         String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
 
-        if(!redisService.exists("canReserve:show:"+show.getId())) {
+        if(!redisService.exists(remainSeatKey)) {
             throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
         }
 
@@ -80,49 +80,49 @@ public class TicketService {
         return TicketResponse.toDto(ticket);
     }
 
-    //비관적락
-//    @Transactional
-//    public TicketResponse reserveSeatWithPessimisticLock(Long userId, CreateSeatReservationRequest request){
-//        User user = userService.findById(userId)
-//                .orElseThrow(()
-//                        -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
-//
-//        Show show = showService.getShow(request.getShowId());
-//        Seat seat = seatService.findByIdAndShowIdWithPessimisticLock(request.getShowId(), request.getSeatId());
-//
-//        if(seat.getRemainSeatCount() < 1){
-//            throw new InvalidRequestException("잔여 좌석이 없습니다.");
-//        }
-//
-//        Ticket ticket = new Ticket(user, seat, show, TicketStatus.PURCHASED);
-//        ticketRepository.save(ticket);
-//
-//        seat.updateRemainSeat(seat.getRemainSeatCount()-1);
-//        seatRepository.save(seat);
-//
-//        return TicketResponse.toDto(ticket);
-//    }
-
+  //  비관적락
     @Transactional
-    @PessimisticLock(key = "'PessimisticLock:show:' + #request.showId + ':seat:' + #request.seatId")
-    public TicketResponse reserveSeatWithPessimisticLock(Long userId, CreateSeatReservationRequest request) {
+    public TicketResponse reserveSeatWithPessimisticLock(Long userId, CreateSeatReservationRequest request){
         User user = userService.findById(userId)
                 .orElseThrow(()
                         -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
 
         Show show = showService.getShow(request.getShowId());
-        Seat seat = seatService.getSeat(request.getShowId(), request.getSeatId());
+        Seat seat = seatService.findByIdAndShowIdWithPessimisticLock(request.getShowId(), request.getSeatId());
 
-        String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
-
-        if(!redisService.exists("canReserve:show:"+show.getId())) {
-            throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
+        if(seat.getRemainSeatCount() < 1){
+            throw new InvalidRequestException("잔여 좌석이 없습니다.");
         }
 
-        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
-        return TicketResponse.toDto(ticket);
+        Ticket ticket = new Ticket(user, seat, show, TicketStatus.PURCHASED);
+        ticketRepository.save(ticket);
 
+        seat.updateRemainSeat(seat.getRemainSeatCount()-1);
+        seatRepository.save(seat);
+
+        return TicketResponse.toDto(ticket);
     }
+
+//    @Transactional
+//    @PessimisticLock(key = "'PessimisticLock:show:' + #request.showId + ':seat:' + #request.seatId")
+//    public TicketResponse reserveSeatWithPessimisticLock(Long userId, CreateSeatReservationRequest request) {
+//        User user = userService.findById(userId)
+//                .orElseThrow(()
+//                        -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
+//
+//        Show show = showService.getShow(request.getShowId());
+//        Seat seat = seatService.getSeat(request.getShowId(), request.getSeatId());
+//
+//        String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
+//
+//        if(!redisService.exists("canReserve:show:"+show.getId())) {
+//            throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
+//        }
+//
+//        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
+//        return TicketResponse.toDto(ticket);
+//
+//    }
 
 
     @Transactional

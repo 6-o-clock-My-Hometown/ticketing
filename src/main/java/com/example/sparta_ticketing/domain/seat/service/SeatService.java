@@ -56,8 +56,10 @@ public class SeatService {
             redisService.set(key, String.valueOf(remainCount));
             seat.updateRemainSeat(remainCount);
         }
+        else {
+            seat.updateRemainSeat(Integer.parseInt(value));
+        }
 
-        seat.updateRemainSeat(Integer.parseInt(value));
     }
 
     private void changeTotalSeatCount(Show show) {

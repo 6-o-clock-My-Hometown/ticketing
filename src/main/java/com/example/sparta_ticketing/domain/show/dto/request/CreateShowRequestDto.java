@@ -23,4 +23,15 @@ public class CreateShowRequestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime reservationEndDate;
     private List<CreateShowSeatsRequestDto> seats;
+
+    public CreateShowRequestDto(String title, Category category, String content, Region region, LocalDateTime startDate, LocalDateTime endDate, LocalDateTime reservationStartDate, LocalDateTime reservationEndDate) {
+        this.title = title;
+        this.category = category;
+        this.content = content;
+        this.region = region;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.reservationStartDate = reservationStartDate;
+        this.reservationEndDate = reservationEndDate;
+    }
 }

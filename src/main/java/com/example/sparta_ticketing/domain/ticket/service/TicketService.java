@@ -121,7 +121,6 @@ public class TicketService {
 
         Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
         return TicketResponse.toDto(ticket);
-
     }
 
 

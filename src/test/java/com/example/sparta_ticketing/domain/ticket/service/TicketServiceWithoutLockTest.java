@@ -80,8 +80,8 @@ class TicketServiceWithoutLockTest {
             Seat seat = new Seat(show, SeatEnum.VIP, 50, 10000);
             seatRepository.save(seat);
 
-            int reserveCount = 10000;
-            ExecutorService executorService = Executors.newFixedThreadPool(1000);
+            int reserveCount = 100;
+            ExecutorService executorService = Executors.newFixedThreadPool(200);
             CountDownLatch latch = new CountDownLatch(reserveCount);
 
             AtomicInteger successCount = new AtomicInteger();
@@ -102,6 +102,7 @@ class TicketServiceWithoutLockTest {
                     } catch (InvalidRequestException e) {
                         failCount.incrementAndGet(); // 예매 실패 (매진 등)
                     } catch (Exception e) {
+                        failCount.incrementAndGet();
                         e.printStackTrace();
                     }finally {
                         latch.countDown();

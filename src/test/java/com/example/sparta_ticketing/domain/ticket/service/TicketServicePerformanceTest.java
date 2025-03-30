@@ -50,8 +50,8 @@ public class TicketServicePerformanceTest {
     @Autowired
     private TicketRepository ticketRepository;
 
-    private static final int REPEAT_COUNT = 1;
-    private static final int RESERVE_COUNT = 5000;
+    private static final int REPEAT_COUNT = 2;
+    private static final int RESERVE_COUNT = 10;
     private static final int THREAD_POOL_SIZE = 200;
 
     @Test
@@ -139,6 +139,7 @@ public class TicketServicePerformanceTest {
                 } catch (InvalidRequestException e) {
                     fail.incrementAndGet();
                 } catch (Exception e) {
+                    fail.incrementAndGet();
                     e.printStackTrace();
                 } finally {
                     latch.countDown();

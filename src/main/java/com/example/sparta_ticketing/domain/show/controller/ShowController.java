@@ -9,7 +9,6 @@ import com.example.sparta_ticketing.domain.show.service.ShowService;
 import jakarta.validation.Valid;
 import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

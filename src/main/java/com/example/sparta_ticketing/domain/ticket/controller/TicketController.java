@@ -25,6 +25,18 @@ public class TicketController {
     }
 
     @Secured(UserRole.Authority.USER)
+    @PostMapping("/pessimisticLock")
+    public ResponseEntity<TicketResponse> reserveSeatWithPessimisticLock (@AuthenticationPrincipal AuthUser user, @RequestBody CreateSeatReservationRequest request) {
+        return ResponseEntity.ok(ticketService.reserveSeatWithPessimisticLock(user.getId(), request));
+    }
+
+    @Secured(UserRole.Authority.USER)
+    @PostMapping("/withoutLock")
+    public ResponseEntity<TicketResponse> reserveSeatWithoutLock (@AuthenticationPrincipal AuthUser user, @RequestBody CreateSeatReservationRequest request) {
+        return ResponseEntity.ok(ticketService.reserveSeatWithoutLock(user.getId(), request));
+    }
+
+    @Secured(UserRole.Authority.USER)
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponse> getReserve (@AuthenticationPrincipal AuthUser user, @PathVariable Long id) {
         return ResponseEntity.ok(ticketService.getReserve(user.getId(), id));

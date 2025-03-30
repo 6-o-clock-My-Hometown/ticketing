@@ -43,24 +43,24 @@ public class DistributedLockAspect {
         return redisLockService.executeWithLock(lockKey, logic);
     }
 
-    @Around("@annotation(pessimisticLock)")
-    public Object applyPessimisticLock(ProceedingJoinPoint joinPoint, PessimisticLock pessimisticLock){
-        //lockKey를 동적 파싱
-        String lockKey = parseSpELKey(joinPoint, pessimisticLock.key());
-        log.info(joinPoint.getSignature().getName());
-
-        Supplier<Object> logic = () ->{
-            try {
-                return joinPoint.proceed();
-
-            }catch (Throwable throwable){
-                throw new RuntimeException(throwable);
-            }
-        };
-
-        //비관적 락 실행
-        return redisLockService.reserveSeatWithPessimisticLock(lockKey, logic);
-    }
+//    @Around("@annotation(pessimisticLock)")
+//    public Object applyPessimisticLock(ProceedingJoinPoint joinPoint, PessimisticLock pessimisticLock){
+//        //lockKey를 동적 파싱
+//        String lockKey = parseSpELKey(joinPoint, pessimisticLock.key());
+//        log.info(joinPoint.getSignature().getName());
+//
+//        Supplier<Object> logic = () ->{
+//            try {
+//                return joinPoint.proceed();
+//
+//            }catch (Throwable throwable){
+//                throw new RuntimeException(throwable);
+//            }
+//        };
+//
+//        //비관적 락 실행
+//        return redisLockService.reserveSeatWithPessimisticLock(lockKey, logic);
+//    }
 
     //spEl표현식을 실행하여 redis key 문자열 반환
     private String parseSpELKey(ProceedingJoinPoint joinPoint, String keyExpression) {

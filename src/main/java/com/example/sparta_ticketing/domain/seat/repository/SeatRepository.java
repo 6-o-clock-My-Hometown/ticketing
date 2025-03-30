@@ -33,7 +33,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Seat s join s.show sh where s.id = :seatId and sh.id = :showId")
-    Optional<Seat> findByIdAndShowIdWithPessimisticLock(@Param("seatId") Long seatId, @Param("showId") Long showId);
+    Optional<Seat> findByIdAndShowIdWithPessimisticLock(@Param("showId") Long showId, @Param("seatId") Long seatId);
 
     Optional<List<Seat>> findByShowId(Long showId);
 }

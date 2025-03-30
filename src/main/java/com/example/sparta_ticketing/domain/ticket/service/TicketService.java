@@ -103,26 +103,6 @@ public class TicketService {
         return TicketResponse.toDto(ticket);
     }
 
-//    @Transactional
-//    @PessimisticLock(key = "'PessimisticLock:show:' + #request.showId + ':seat:' + #request.seatId")
-//    public TicketResponse reserveSeatWithPessimisticLock(Long userId, CreateSeatReservationRequest request) {
-//        User user = userService.findById(userId)
-//                .orElseThrow(()
-//                        -> new UserNotFoundException("회원 정보가 존재하지 않습니다."));
-//
-//        Show show = showService.getShow(request.getShowId());
-//        Seat seat = seatService.getSeat(request.getShowId(), request.getSeatId());
-//
-//        String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
-//
-//        if(!redisService.exists("canReserve:show:"+show.getId())) {
-//            throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
-//        }
-//
-//        Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
-//        return TicketResponse.toDto(ticket);
-//
-//    }
 
 
     @Transactional
@@ -149,6 +129,7 @@ public class TicketService {
             }
 
             if(remain < 0){
+                redisService.increment(key);
                 throw new InvalidRequestException("해당 좌석 등급은 매진되었습니다.");
             }
 

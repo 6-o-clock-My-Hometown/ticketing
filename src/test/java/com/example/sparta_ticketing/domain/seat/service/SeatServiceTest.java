@@ -316,7 +316,7 @@ class SeatServiceTest {
         given(seatRepository.findByIdAndShowIdWithPessimisticLock(TEST_SEAT_ID, TEST_SHOW_ID)).willReturn(Optional.of(TEST_SEAT));
 
         //when
-        Seat byIdAndShowIdWithPessimisticLock = seatService.findByIdAndShowIdWithPessimisticLock(TEST_SHOW_ID, TEST_SEAT_ID);
+        Seat byIdAndShowIdWithPessimisticLock = seatService.findByIdAndShowIdWithPessimisticLock(TEST_SEAT_ID, TEST_SHOW_ID);
 
         //then
         assertThat(byIdAndShowIdWithPessimisticLock).isNotNull();

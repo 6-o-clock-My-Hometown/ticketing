@@ -1,18 +1,19 @@
 package com.example.sparta_ticketing.domain.user.entity;
 
-
+import com.example.sparta_ticketing.common.entity.BaseEntity;
 import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +40,5 @@ public class User {
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
     }
+
 }

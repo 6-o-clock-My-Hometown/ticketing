@@ -29,17 +29,24 @@ public class Seat{
 
     private int price;
 
-    public  Seat(Show show, SeatEnum name, int count, int price) {
+    private int remainSeatCount;
+
+    public Seat(Show show, SeatEnum name, int count, int price) {
         this.show = show;
         this.name = name;
         this.count = count;
         this.price = price;
+        this.remainSeatCount = count;
     }
 
     public void updateSeat(SeatEnum name, int count, int price){
         this.name = name;
         this.count = count;
         this.price = price;
+    }
+
+    public void updateRemainSeat(int remainSeatCount){
+        this.remainSeatCount = remainSeatCount;
     }
 
 }

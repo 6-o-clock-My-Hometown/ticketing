@@ -1,16 +1,20 @@
 package com.example.sparta_ticketing.domain.show.service;
 
+import com.example.sparta_ticketing.common.config.ViewCount;
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
+import com.example.sparta_ticketing.common.redis.RedisService;
+import com.example.sparta_ticketing.common.redis.RedisViewCountService;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
-import com.example.sparta_ticketing.domain.seat.service.SeatService;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowSeatsRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.dto.response.PagingShowResponse;
 import com.example.sparta_ticketing.domain.show.dto.response.ShowResponseDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
+import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
@@ -22,6 +26,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,10 +38,13 @@ public class ShowService {
     private final ShowRepository showRepository;
     private final UserService userService;
     private final SeatRepository seatRepository;
+    private final RedisService redisService;
+    private final RedisViewCountService redisViewCountService;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
-        User user = userService.findById(authUser.getId()).orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
+        User user = userService.findById(authUser.getId())
+                .orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
 
         int totalSeats = 0;
         for (CreateShowSeatsRequestDto seat: createShowRequestDto.getSeats()) {
@@ -46,19 +55,26 @@ public class ShowService {
         }
 
         Show show = new Show(createShowRequestDto, totalSeats, user);
-
         Show savedShow = showRepository.save(show);
+
         List<Seat> seats = createShowRequestDto.getSeats().stream()
-                .map(dto -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
+                .map(dto
+                        -> new Seat(savedShow, dto.getSeatName(), dto.getSeatCount(), dto.getSeatPrice()))
                 .collect(Collectors.toList());
 
         seatRepository.saveAll(seats);
+
+        try{
+            redisService.setTrigger(show);
+        } catch (Exception e){
+            throw new InvalidRequestException("예매 시작시간을 현재 시간보다 늦게 설정해주세요.");
+        }
     }
 
     @Transactional(readOnly = true)
     public PagingShowResponse getShowList(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Show> showPage = showRepository.findAll(pageable);
+        Page<Show> showPage = showRepository.findByStatus(ShowStatus.NOT_DELETED, pageable);
         List<ShowResponseDto> shows = showPage.getContent()
                 .stream()
                 .map(ShowResponseDto::toDto)
@@ -82,6 +98,13 @@ public class ShowService {
     public Show getShow(Long showId) {
         return findShow(showId);
     }
+
+    @ViewCount
+    @Transactional(readOnly = true)
+    public ShowResponseDto findByShow(Long showId, AuthUser authUser) {
+        return ShowResponseDto.form(findShow(showId), redisViewCountService.getViewCount(showId));
+    }
+
 
     /**
      * 특정 공연 정보 수정
@@ -108,7 +131,22 @@ public class ShowService {
         findShow.deleteShow();
     }
 
-    private Show findShow(Long showId) {
-        return showRepository.findById(showId).orElseThrow(() -> new IllegalArgumentException("해당 공연을 찾을 수 없습니다."));
+    @Transactional
+    public void changeShowStatus(Long showId) {
+        Show findShow = findShow(showId);
+        findShow.expiredShow();
     }
+
+    @Transactional(readOnly = true)
+    public List<Show> findExpiredShow() {
+        return showRepository.findExpiredShow(LocalDateTime.now(), ShowStatus.NOT_DELETED);
+    }
+
+
+    private Show findShow(Long showId) {
+        return showRepository.findShowById(showId, ShowStatus.NOT_DELETED)
+                .orElseThrow(() -> new ShowNotFoundException("해당 공연을 찾을 수 없습니다."));
+    }
+
+
 }

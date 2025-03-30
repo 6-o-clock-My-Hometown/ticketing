@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLOutput;
+
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -47,13 +49,14 @@ public class TicketService {
 
         String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
 
+        System.out.println("remain;"+remainSeatKey);
+
         if(!redisService.exists("canReserve:show:"+show.getId())) {
             throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
         }
 
         Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
         return TicketResponse.toDto(ticket);
-
     }
 
     // 락을 사용안했을 때
@@ -123,7 +126,6 @@ public class TicketService {
         return TicketResponse.toDto(ticket);
     }
 
-
     @Transactional
     public void cancelReserveSeat(Long userId, Long ticketId) {
         Ticket ticket = ticketRepository.getTicketIdAndUserId(ticketId, userId).orElseThrow(() -> new InvalidRequestException("예매 정보가 존재하지 않습니다."));
@@ -132,7 +134,6 @@ public class TicketService {
 
         redisService.increment(remainSeatKey);
     }
-
 
     @Transactional(readOnly = true)
     public TicketResponse getReserve(Long userId, Long id) {

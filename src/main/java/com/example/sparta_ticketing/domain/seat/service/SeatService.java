@@ -80,8 +80,8 @@ public class SeatService {
         return seatRepository.remainSeatCount(seatId);
     }
 
-    public Seat findByIdAndShowIdWithPessimisticLock(Long showId,Long seatId) {
-        return seatRepository.findByIdAndShowIdWithPessimisticLock(seatId, showId).orElseThrow(() -> new InvalidRequestException("조회된 좌석 정보가 없습니다."));
+    public Seat findByIdAndShowIdWithPessimisticLock(Long showId, Long seatId) {
+        return seatRepository.findByIdAndShowIdWithPessimisticLock(showId, seatId).orElseThrow(() -> new InvalidRequestException("조회된 좌석 정보가 없습니다."));
     }
 
 }

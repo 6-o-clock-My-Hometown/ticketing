@@ -7,10 +7,14 @@ import com.example.sparta_ticketing.domain.seat.dto.response.SeatResponse;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.enums.SeatEnum;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
+import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
+import com.example.sparta_ticketing.domain.show.enums.Category;
+import com.example.sparta_ticketing.domain.show.enums.Region;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.show.service.ShowService;
 import com.example.sparta_ticketing.domain.user.entity.User;
+import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,20 +40,33 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SeatServiceTest {
+    public static final Long TEST_ROLE_DIRECTOR_ID = 1L;
+    private static final Long TEST_INVALID_ROLE_DIRECTOR = 9999L;
+    public static final User TEST_ROLE_DIRECTOR = new User(
+            "tes@example.com",
+            "password",
+            "테스트유저",
+            "010-1234-5678",
+            "1995-05-10",
+            UserRole.ROLE_DIRECTOR);
+
     //show
-    public static final Long TEST_SHOW_ID = 3L;
+    public static final Long TEST_SHOW_ID = 1L;
     public static final Long TEST_INVALID_SHOW_ID = 9999L;
-    public static final Show TEST_SHOW = new Show();
+    public static final Show TEST_SHOW = new Show(new CreateShowRequestDto("공연",
+            Category.MUSICAL,
+            "공연내용",
+            Region.SEOUL,
+            LocalDateTime.now().plusDays(2),
+            LocalDateTime.now().plusDays(3),
+            LocalDateTime.now().plusMinutes(1),
+            LocalDateTime.now().plusDays(1)), 50, TEST_ROLE_DIRECTOR);
 
     //seat
-    public static final Long TEST_SEAT_ID = 7L;
+    public static final Long TEST_SEAT_ID = 1L;
     public static final Long TEST_INVALID_SEAT_ID = 9999L;
     public static final Seat TEST_SEAT = new Seat(TEST_SEAT_ID,TEST_SHOW, SeatEnum.SVIP, 1000, 150000, 1000);
 
-    //user
-    public static final Long TEST_ROLE_DIRECTOR_ID = 2L;
-    private static final Long TEST_INVALID_ROLE_DIRECTOR = 9999L;
-    public static final User TEST_ROLE_DIRECTOR = new User();
 
     //페이징
     public static final Pageable TEST_PAGEABLE = PageRequest.of(1, 10);
@@ -60,9 +78,6 @@ class SeatServiceTest {
 
     @Mock
     private SeatRepository seatRepository;
-
-    @Mock
-    private ShowRepository showRepository;
 
     @Mock
     private ShowService showService;

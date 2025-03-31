@@ -34,6 +34,7 @@ public class AuthService {
         if (request.getUserRole().equals("ROLE_ADMIN")) {
             throw new AuthException("관리자로 가입이 불가능합니다");
         }
+
         String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(

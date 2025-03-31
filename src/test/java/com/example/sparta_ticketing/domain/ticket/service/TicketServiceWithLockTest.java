@@ -2,6 +2,7 @@ package com.example.sparta_ticketing.domain.ticket.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.redis.RedisService;
+import com.example.sparta_ticketing.common.security.JwtUtil;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.enums.SeatEnum;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -17,9 +18,11 @@ import com.example.sparta_ticketing.domain.user.enums.UserRole;
 import com.example.sparta_ticketing.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
@@ -51,6 +54,8 @@ public class TicketServiceWithLockTest {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
     @Test
     void 동시예매시_50명만_가능하도록_제어() throws InterruptedException {

@@ -11,6 +11,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     Optional<Ticket> findByIdAndUserId(Long id, Long userId);
 
-    @Query("select s from Ticket s join User u where s.id = :id and u.id = :userId and s.status = 'PURCHASED'")
+    @Query("select s from Ticket s join User u on s.user.id = u.id where s.id = :id and u.id = :userId and s.status = 'PURCHASED'")
     Optional<Ticket> getTicketIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 }

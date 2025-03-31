@@ -1,6 +1,7 @@
 package com.example.sparta_ticketing.domain.ticket.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
+import com.example.sparta_ticketing.common.security.JwtUtil;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.enums.SeatEnum;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
@@ -44,6 +46,8 @@ class TicketServiceWithoutLockTest {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
 
     @Test
     void 동시성제어없이_동시예매시_실패() throws InterruptedException{
@@ -66,21 +70,21 @@ class TicketServiceWithoutLockTest {
                             Category.MUSICAL,
                             "공연내용",
                             Region.SEOUL,
-                            LocalDateTime.now(),
-                            LocalDateTime.now().plusDays(1),
-                            LocalDateTime.now(),
+                            LocalDateTime.now().plusDays(2),
+                            LocalDateTime.now().plusDays(3),
+                            LocalDateTime.now().plusMinutes(1),
                             LocalDateTime.now().plusDays(1)
                     ),
                     50,
                     user
             );
 
-            showRepository.save(show);
+            showRepository.saveAndFlush(show);
 
             Seat seat = new Seat(show, SeatEnum.VIP, 50, 10000);
-            seatRepository.save(seat);
+            seatRepository.saveAndFlush(seat);
 
-            int reserveCount = 100;
+            int reserveCount = 1000;
             ExecutorService executorService = Executors.newFixedThreadPool(200);
             CountDownLatch latch = new CountDownLatch(reserveCount);
 
@@ -104,6 +108,8 @@ class TicketServiceWithoutLockTest {
                     } catch (Exception e) {
                         failCount.incrementAndGet();
                         e.printStackTrace();
+                        failCount.incrementAndGet(); // 예매 실패 (매진 등)
+
                     }finally {
                         latch.countDown();
                     }

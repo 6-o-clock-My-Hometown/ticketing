@@ -51,9 +51,11 @@ public class ShowService {
                 .orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
 
         int totalSeats = 0;
+
         for (CreateShowSeatsRequestDto seat: createShowRequestDto.getSeats()) {
             totalSeats += seat.getSeatCount();
         }
+
         if(totalSeats == 0){
             throw new InvalidRequestException("좌석의 총 개수가 0이 될 수 없습니다.");
         }

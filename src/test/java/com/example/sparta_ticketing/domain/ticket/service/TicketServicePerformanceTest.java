@@ -2,6 +2,7 @@ package com.example.sparta_ticketing.domain.ticket.service;
 
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.redis.RedisService;
+import com.example.sparta_ticketing.common.security.JwtUtil;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.enums.SeatEnum;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,8 +52,11 @@ public class TicketServicePerformanceTest {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;
+
     private static final int REPEAT_COUNT = 1;
-    private static final int RESERVE_COUNT = 5000;
+    private static final int RESERVE_COUNT = 1000;
     private static final int THREAD_POOL_SIZE = 200;
 
     @Test

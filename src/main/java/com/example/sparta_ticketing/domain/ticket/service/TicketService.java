@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLOutput;
-
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -48,8 +46,6 @@ public class TicketService {
         Seat seat = seatService.getSeat(request.getShowId(), request.getSeatId());
 
         String remainSeatKey = "ticket:show:" + show.getId() + ":seat:" + seat.getId();
-
-        System.out.println("remain;"+remainSeatKey);
 
         if(!redisService.exists("canReserve:show:"+show.getId())) {
             throw new InvalidRequestException("예매 가능 기간이 지났습니다.");

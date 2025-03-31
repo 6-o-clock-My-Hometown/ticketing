@@ -66,13 +66,11 @@ public class ShowService {
         seatRepository.saveAll(seats);
 
         // 만료 시간 가져오기
-        String key = "canReserve:show:"+ savedShow.getId();//key 이름 생성
-        Long ttl = redisService.getTtlHour(createShowRequestDto.getReservationEndDate());//
+        String key = "canReserve:show:"+ savedShow.getId();
+        Long ttl = redisService.getTtlHour(createShowRequestDto.getReservationEndDate());
         Long ttlMinute = redisService.getTtlMinute(createShowRequestDto.getReservationEndDate());
-        // 예매가능 기간 체크
         //redisService.setWithTtl(key,String.valueOf(true), ttl, TimeUnit.HOURS);
         redisService.setWithTtl(key,String.valueOf(1), ttlMinute, TimeUnit.MINUTES);
-//endDate까지의 분을 현재시간과  빼서 계산 후 예약 시간이 끝나면 사라지는 redis 구현.
         for (Seat seat: seats) {
             redisService.set("ticket:show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
         }

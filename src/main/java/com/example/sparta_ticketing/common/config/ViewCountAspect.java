@@ -15,7 +15,7 @@ public class ViewCountAspect {
 
     private final RedisViewCountService viewCountService;
 
-    @Around("@annotation(com.example.sparta_ticketing.common.config.ViewCount) && args(showId,authUser)")
+    @Around("@annotation(com.example.sparta_ticketing.common.config.ViewCountAop) && args(showId,authUser)")
     public Object countView(ProceedingJoinPoint joinPoint, Long showId, AuthUser authUser) throws Throwable {
         Object result = joinPoint.proceed();
         viewCountService.increaseViewCount(showId, authUser.getId());

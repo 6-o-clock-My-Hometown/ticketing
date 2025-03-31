@@ -106,6 +106,7 @@ class TicketServiceWithoutLockTest {
                     } catch (InvalidRequestException e) {
                         failCount.incrementAndGet(); // 예매 실패 (매진 등)
                     } catch (Exception e) {
+                        failCount.incrementAndGet();
                         e.printStackTrace();
                         failCount.incrementAndGet(); // 예매 실패 (매진 등)
 

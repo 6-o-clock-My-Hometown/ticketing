@@ -1,6 +1,6 @@
 package com.example.sparta_ticketing.domain.show.service;
 
-import com.example.sparta_ticketing.common.config.ViewCount;
+import com.example.sparta_ticketing.common.config.ViewCountAop;
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
 import com.example.sparta_ticketing.common.redis.RedisService;
@@ -18,8 +18,11 @@ import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.user.entity.User;
 import com.example.sparta_ticketing.domain.user.service.UserService;
+import com.example.sparta_ticketing.domain.viewCount.entity.ViewCount;
+import com.example.sparta_ticketing.domain.viewCount.repository.ViewCountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +43,7 @@ public class ShowService {
     private final SeatRepository seatRepository;
     private final RedisService redisService;
     private final RedisViewCountService redisViewCountService;
+    private final ViewCountRepository viewCountRepository;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
@@ -55,6 +59,9 @@ public class ShowService {
         if(totalSeats == 0){
             throw new InvalidRequestException("좌석의 총 개수가 0이 될 수 없습니다.");
         }
+        if(createShowRequestDto.getReservationStartDate().isBefore(LocalDateTime.now())){
+            throw new InvalidRequestException("예매 시작시간을 현재 시간보다 늦게 설정해주세요.");
+        }
 
         Show show = new Show(createShowRequestDto, totalSeats, user);
         Show savedShow = showRepository.save(show);
@@ -65,13 +72,7 @@ public class ShowService {
                 .collect(Collectors.toList());
 
         seatRepository.saveAll(seats);
-
-
-        try{
-            redisService.setTrigger(show);
-        } catch (Exception e){
-            throw new InvalidRequestException("예매 시작시간을 현재 시간보다 늦게 설정해주세요.");
-        }
+        redisService.setTrigger(show);
     }
 
     @Transactional(readOnly = true)
@@ -102,10 +103,26 @@ public class ShowService {
         return findShow(showId);
     }
 
-    @ViewCount
+    @ViewCountAop
     @Transactional(readOnly = true)
     public ShowResponseDto findByShow(Long showId, AuthUser authUser) {
         return ShowResponseDto.form(findShow(showId), redisViewCountService.getViewCount(showId));
+    }
+
+
+    // DB로 조회수 관리 로직
+    @Transactional
+    public ShowResponseDto findByShowDb(Long showId, AuthUser authUser) {
+        Show show = findShow(showId);
+        User user = userService.findById(authUser.getId()).orElseThrow(()-> new EntityNotFoundException("회원을 찾지 못했습니다."));
+        try {
+            viewCountRepository.save(new ViewCount(user, show));
+        } catch (DataIntegrityViolationException e) {
+            // 이미 존재하면 무시
+        }
+        long viewCount = viewCountRepository.countByShow(show);
+
+        return ShowResponseDto.form(show, viewCount);
     }
 
 

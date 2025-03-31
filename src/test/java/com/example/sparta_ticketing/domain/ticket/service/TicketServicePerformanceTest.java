@@ -52,6 +52,7 @@ public class TicketServicePerformanceTest {
     @Autowired
     private TicketRepository ticketRepository;
 
+
     @MockitoBean
     private JwtUtil jwtUtil;
 
@@ -144,6 +145,7 @@ public class TicketServicePerformanceTest {
                 } catch (InvalidRequestException e) {
                     fail.incrementAndGet();
                 } catch (Exception e) {
+                    fail.incrementAndGet();
                     e.printStackTrace();
                 } finally {
                     latch.countDown();

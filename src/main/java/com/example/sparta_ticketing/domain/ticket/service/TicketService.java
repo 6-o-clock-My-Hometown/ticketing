@@ -53,7 +53,6 @@ public class TicketService {
 
         Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
         return TicketResponse.toDto(ticket);
-
     }
 
     // 락을 사용안했을 때
@@ -104,7 +103,6 @@ public class TicketService {
     }
 
 
-
     @Transactional
     public void cancelReserveSeat(Long userId, Long ticketId) {
         Ticket ticket = ticketRepository.getTicketIdAndUserId(ticketId, userId).orElseThrow(() -> new InvalidRequestException("예매 정보가 존재하지 않습니다."));
@@ -113,7 +111,6 @@ public class TicketService {
 
         redisService.increment(remainSeatKey);
     }
-
 
     @Transactional(readOnly = true)
     public TicketResponse getReserve(Long userId, Long id) {

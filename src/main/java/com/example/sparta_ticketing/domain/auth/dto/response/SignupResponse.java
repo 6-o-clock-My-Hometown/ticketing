@@ -11,4 +11,5 @@ public class SignupResponse {
     public SignupResponse(String jwtToken) {
         this.jwtToken = jwtToken;
     }
+
 }

@@ -49,11 +49,10 @@ public class TicketService {
 
         if(!redisService.exists(remainSeatKey)) {
             throw new InvalidRequestException("예매 가능 기간이 지났습니다.");
-        } 
+        }
 
         Ticket ticket = reserveTicket(user, seat, show, remainSeatKey);
         return TicketResponse.toDto(ticket);
-
     }
 
     // 락을 사용안했을 때
@@ -67,7 +66,7 @@ public class TicketService {
         Seat seat = seatService.getSeat(request.getSeatId(), request.getShowId());
         int remainSeatCount = seatService.countRemainSeats(request.getSeatId());
 
-        if(remainSeatCount < 0){
+        if(remainSeatCount <= 0){
             throw new InvalidRequestException("잔여 좌석이 없습니다.");
         }
 
@@ -104,7 +103,6 @@ public class TicketService {
     }
 
 
-
     @Transactional
     public void cancelReserveSeat(Long userId, Long ticketId) {
         Ticket ticket = ticketRepository.getTicketIdAndUserId(ticketId, userId).orElseThrow(() -> new InvalidRequestException("예매 정보가 존재하지 않습니다."));
@@ -113,7 +111,6 @@ public class TicketService {
 
         redisService.increment(remainSeatKey);
     }
-
 
     @Transactional(readOnly = true)
     public TicketResponse getReserve(Long userId, Long id) {

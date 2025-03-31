@@ -24,7 +24,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     @Query("select s from Seat s join s.show sh where s.id = :seatId and sh.id = :showId")
     Optional<Seat> findByIdAndShowId(@Param("seatId") Long seatId, @Param("showId") Long showId);
 
-
     @Query("select s.remainSeatCount from Seat s where s.id= :seatId")
     Integer remainSeatCount(@Param("seatId") Long seatId);
 

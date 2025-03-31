@@ -5,11 +5,9 @@ import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.enums.SeatEnum;
 import com.example.sparta_ticketing.domain.show.dto.request.CreateShowRequestDto;
-import com.example.sparta_ticketing.domain.show.dto.request.UpdateShowRequestDto;
 import com.example.sparta_ticketing.domain.show.entity.Show;
 import com.example.sparta_ticketing.domain.show.enums.Category;
 import com.example.sparta_ticketing.domain.show.enums.Region;
-import com.example.sparta_ticketing.domain.show.enums.ShowStatus;
 import com.example.sparta_ticketing.domain.show.repository.ShowRepository;
 import com.example.sparta_ticketing.domain.ticket.entity.Ticket;
 import com.example.sparta_ticketing.domain.ticket.enums.TicketStatus;
@@ -29,7 +27,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)

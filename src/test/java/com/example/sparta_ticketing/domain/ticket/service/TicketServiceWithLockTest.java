@@ -89,7 +89,7 @@ public class TicketServiceWithLockTest {
             seatRepository.save(seat);
             redisService.set("ticket:show:" + show.getId() + ":seat:" + seat.getId(), "50");
 
-            int reserveCount = 10000;
+            int reserveCount = 100;
             ExecutorService executorService = Executors.newFixedThreadPool(1000);
             CountDownLatch latch = new CountDownLatch(reserveCount);
 

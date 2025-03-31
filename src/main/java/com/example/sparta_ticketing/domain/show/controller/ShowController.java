@@ -52,7 +52,7 @@ public class ShowController {
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long showId
     ) {
-        return ResponseEntity.ok(showService.findByShow(showId, authUser.getId()));
+        return ResponseEntity.ok(showService.findByShow(showId, authUser));
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.example.sparta_ticketing.common.redis;
 
+import com.example.sparta_ticketing.domain.show.entity.Show;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,15 @@ public class RedisService {
 
         // ttl 계산
         return Duration.between(now, endDateTime).toMinutes();
+    }
+
+    public void setTrigger(Show show){
+        String redisReserveKey = "reserve:start:show:" + show.getId();
+        LocalDateTime now = LocalDateTime.now();
+        redisTemplate.opsForValue().set(redisReserveKey, "trigger", Duration.between(now, show.getReservationStartDate()));
+    }
+
+    public void expire(String key, LocalDateTime endDateTime){
+        redisTemplate.expire(key, Duration.between(LocalDateTime.now(), endDateTime));
     }
 }

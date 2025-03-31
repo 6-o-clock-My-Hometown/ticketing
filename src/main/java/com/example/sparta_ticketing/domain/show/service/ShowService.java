@@ -1,8 +1,10 @@
 package com.example.sparta_ticketing.domain.show.service;
 
+import com.example.sparta_ticketing.common.config.ViewCount;
 import com.example.sparta_ticketing.common.exception.InvalidRequestException;
 import com.example.sparta_ticketing.common.exception.ShowNotFoundException;
 import com.example.sparta_ticketing.common.redis.RedisService;
+import com.example.sparta_ticketing.common.redis.RedisViewCountService;
 import com.example.sparta_ticketing.domain.auth.entity.AuthUser;
 import com.example.sparta_ticketing.domain.seat.entity.Seat;
 import com.example.sparta_ticketing.domain.seat.repository.SeatRepository;
@@ -24,10 +26,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -38,6 +39,7 @@ public class ShowService {
     private final UserService userService;
     private final SeatRepository seatRepository;
     private final RedisService redisService;
+    private final RedisViewCountService redisViewCountService;
 
     @Transactional
     public void createShow(AuthUser authUser, CreateShowRequestDto createShowRequestDto) {
@@ -56,7 +58,6 @@ public class ShowService {
 
         Show show = new Show(createShowRequestDto, totalSeats, user);
         Show savedShow = showRepository.save(show);
-        redisService.set("viewCount:show:" + savedShow.getId(), "0");
 
         List<Seat> seats = createShowRequestDto.getSeats().stream()
                 .map(dto
@@ -65,14 +66,11 @@ public class ShowService {
 
         seatRepository.saveAll(seats);
 
-        // 만료 시간 가져오기
-        String key = "canReserve:show:"+ savedShow.getId();
-        Long ttl = redisService.getTtlHour(createShowRequestDto.getReservationEndDate());
-        Long ttlMinute = redisService.getTtlMinute(createShowRequestDto.getReservationEndDate());
-        //redisService.setWithTtl(key,String.valueOf(true), ttl, TimeUnit.HOURS);
-        redisService.setWithTtl(key,String.valueOf(1), ttlMinute, TimeUnit.MINUTES);
-        for (Seat seat: seats) {
-            redisService.set("ticket:show:"+ savedShow.getId() + ":seat:" + seat.getId(),String.valueOf(seat.getCount()));
+
+        try{
+            redisService.setTrigger(show);
+        } catch (Exception e){
+            throw new InvalidRequestException("예매 시작시간을 현재 시간보다 늦게 설정해주세요.");
         }
     }
 
@@ -84,7 +82,6 @@ public class ShowService {
                 .stream()
                 .map(ShowResponseDto::toDto)
                 .toList();
-
         return new PagingShowResponse(
                 shows,
                 showPage.getNumber(),
@@ -105,16 +102,10 @@ public class ShowService {
         return findShow(showId);
     }
 
+    @ViewCount
     @Transactional(readOnly = true)
-    public ShowResponseDto findByShow(Long showId, Long userId) {
-        String key = "view:show:"+ showId + ":user:" + userId;
-
-        if(!redisService.exists(key)){
-            redisService.increment("viewCount:show:" + showId);
-            redisService.set(key, "1");
-        }
-
-        return ShowResponseDto.form(findShow(showId), Integer.parseInt(redisService.get("viewCount:show:" + showId)));
+    public ShowResponseDto findByShow(Long showId, AuthUser authUser) {
+        return ShowResponseDto.form(findShow(showId), redisViewCountService.getViewCount(showId));
     }
 
 
